@@ -1,0 +1,5 @@
+minimize: 5w1 + 8w2
+subject to:
+    1w1 + 2w2 >= 3
+    1w1 + 1w2 >= 4
+u >= 0

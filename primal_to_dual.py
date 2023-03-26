@@ -1,39 +1,32 @@
 import numpy as np
 
-# Define the primal linear programming problem
-# maximize 3x + 4y
-# subject to:
-#   x + y <= 5
-#   2x + y <= 8
-#   x >= 0, y >= 0
-c = np.array([3, 4])
-A = np.array([[1, 1], [2, 1]])
-b = np.array([5, 8])
-lb = np.array([0, 0])
+# Read the primal linear programming problem from the input file
+with open("inputfordual.txt", "r") as f:
+    lines = f.readlines()
+
+c = np.array([int(x) for x in lines[0].split()])
+A = np.array([[int(x) for x in line.split()] for line in lines[1:-1]])
+b = np.array([int(x) for x in lines[-1].split()])
 
 # Compute the dual linear programming problem
-# minimize 5u + 8v
-# subject to:
-#   u + 2v >= 3
-#   u + v >= 4
-#   u >= 0, v >= 0
 c_dual = b
-A_dual = -A.T
+A_dual = A.T
 b_dual = c
-lb_dual = np.array([0, 0])
+lb_dual = np.zeros(len(A_dual))
 
-# Print the primal and dual linear programming problems
-print("Primal linear programming problem:")
-print("maximize:", c, "x")
-print("subject to:")
-for i in range(len(A)):
-    print(A[i], "x <= ", b[i])
-print("x >= ", lb)
-
-print("\nDual linear programming problem:")
-print("minimize:", b_dual, "u + ", c_dual, "v")
-print("subject to:")
-for i in range(len(A_dual)):
-    print(A_dual[i], "u + ", A_dual[i][1], "v >= ", c_dual[i])
-print("u >= ", lb_dual[0])
-print("v >= ", lb_dual[1])
+# Write the dual linear programming problem to the output file
+with open("output.txt", "w") as f:
+    f.write("minimize: ")
+    for i in range(len(c_dual)):
+        f.write(str(c_dual[i]) + "w" + str(i+1))
+        if i < len(c_dual) - 1:
+            f.write(" + ")
+    f.write("\nsubject to:\n")
+    for i in range(len(A_dual)):
+        f.write("    ")
+        for j in range(len(A_dual[i])):
+            f.write(str(A_dual[i][j]) + "w" + str(j+1))
+            if j < len(A_dual[i]) - 1:
+                f.write(" + ")
+        f.write(" >= " + str(b_dual[i]) + "\n")
+    f.write("u >= 0")
